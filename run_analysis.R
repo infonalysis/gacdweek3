@@ -5,37 +5,43 @@
 ##  4 Appropriately labels the data set with descriptive activity names. 
 ##  5 Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
+tidyUP <- function() {
+##
+##  Load some supplemental files
+##
+    columnNames <- t(read.table("UCI\ HAR\ Dataset/features.txt"))[2,] ## read in column names
+    actionKeys <- read.table("UCI\ HAR\ Dataset/activity_labels.txt", col.names=c("Action.ID", "Action.Name")) ## read in activity key
 
 ##
 ##  Bring in testing data
 ##
-testX <- read.table("UCI\ HAR\ Dataset/test/X_test.txt") ##  read in the main test data
-colnames(testX) <- t(read.table("UCI\ HAR\ Dataset/features.txt"))[2,] ##  set the column names
-testX <- cbind(read.table("UCI\ HAR\ Dataset/test/Y_test.txt"), testX) ## add activity codes
-names(testX)[1] <- "Action" ##  rename activity column
-testX <- cbind(read.table("UCI\ HAR\ Dataset/test/subject_test.txt"), testX) ## add subject IDs
-names(testX)[1] <- "Subject.ID" ##  rename subject ID column
-
+    testX <- read.table("UCI\ HAR\ Dataset/test/X_test.txt", col.names=columnNames, check.names=FALSE) ##  read in the main test data
+    testX <- cbind(read.table("UCI\ HAR\ Dataset/test/Y_test.txt", col.names=c("Action")), testX) ## add activity codes
+    testX <- cbind(read.table("UCI\ HAR\ Dataset/test/subject_test.txt", col.names=c("Subject.ID")), testX) ## add subject IDs
+    testX$Action <- actionKeys$Action.Name[match(testX$Action,actionKeys$Action.ID)] ##  replace action codes with descriptive names
 
 
 ##
 ##  Bring in training data
 ##
-trainX <- read.table("UCI\ HAR\ Dataset/train/X_train.txt") ##  read in the main test data
-colnames(trainX) <- t(read.table("UCI\ HAR\ Dataset/features.txt"))[2,] ##  set the column names
-trainX <- cbind(read.table("UCI\ HAR\ Dataset/train/Y_train.txt"), trainX) ## add activity codes
-names(trainX)[1] <- "Action" ##  rename activity column
-trainX <- cbind(read.table("UCI\ HAR\ Dataset/train/subject_train.txt"), trainX) ## add subject IDs
-names(trainX)[1] <- "Subject.ID" ##  rename subject ID column
+    trainX <- read.table("UCI\ HAR\ Dataset/train/X_train.txt", col.names=columnNames, check.names=FALSE) ##  read in the main test data
+    trainX <- cbind(read.table("UCI\ HAR\ Dataset/train/Y_train.txt", col.names=c("Action")), trainX) ## add activity codes
+    trainX <- cbind(read.table("UCI\ HAR\ Dataset/train/subject_train.txt", col.names=c("Subject.ID")), trainX) ## add subject IDs
+    trainX$Action <- actionKeys$Action.Name[match(trainX$Action,actionKeys$Action.ID)] ##  replace action codes with descriptive names
 
 ##
 ##  Combine testing and training data sets
 ##
-combinedData <- rbind(testX, trainX) ##  combine testing and training sets
-combinedData <- combinedData[,grep("Action|Subject.ID|mean()|std()", colnames(combinedData))] ##  remove columns that don't represent a mean() or std()
+    combinedData <- rbind(testX, trainX) ##  combine testing and training sets
+    combinedData <- combinedData[,grep("Action|Subject.ID|mean\\(\\)|std\\(\\)", colnames(combinedData))] ##  remove columns that don't represent a mean() or std()
 
+##
+##  Print some output
+##
+    return(combinedData)
+}
 
-
+write.csv(tidiedData, file="tidiedData1.csv")
 
 
 ##  trainX["Subject.ID"] <- read.table("UCI\ HAR\ Dataset/train/subject_train.txt") ##  include the subject IDs
