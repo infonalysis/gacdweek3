@@ -5,8 +5,35 @@
 ##  4 Appropriately labels the data set with descriptive activity names. 
 ##  5 Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
-read.table("UCI\ HAR\ Dataset/test/Inertial\ Signals/body_acc_x_test.txt")
 
-testHeaders <- read.table("UCI\ HAR\ Dataset/features.txt")
-test2 <- read.table("UCI\ HAR\ Dataset/test/X_test.txt")
-colnames(test2) <- t(testHeaders)[2,]
+##
+##  The good stuff
+##
+testX <- read.table("UCI\ HAR\ Dataset/test/X_test.txt") ##  read in the main test data
+colnames(testX) <- t(read.table("UCI\ HAR\ Dataset/features.txt"))[2,] ##  set the column names
+testX["Subject.ID"] <- read.table("UCI\ HAR\ Dataset/test/subject_test.txt") ##  include the subject IDs
+
+trainX <- read.table("UCI\ HAR\ Dataset/train/X_train.txt") ##  read in the main test data
+colnames(trainX) <- t(read.table("UCI\ HAR\ Dataset/features.txt"))[2,] ##  set the column names
+trainX["Subject.ID"] <- read.table("UCI\ HAR\ Dataset/train/subject_train.txt") ##  include the subject IDs
+
+
+##
+##  random lines of code
+##
+##  read.table("UCI\ HAR\ Dataset/test/Inertial\ Signals/body_acc_x_test.txt")
+
+##  colHeaders <- read.table("UCI\ HAR\ Dataset/features.txt")
+
+
+
+##  testSubjects <- read.table("UCI\ HAR\ Dataset/test/subject_test.txt")
+##  colnames(testSubjects) <- c("Subject.ID")
+
+
+
+##  trainSubjects <- read.table("UCI\ HAR\ Dataset/train/subject_train.txt")
+##  colnames(trainSubjects) <- c("Subject.ID")
+
+
+##  colnames(testX) <- c(t(read.table("UCI\ HAR\ Dataset/features.txt")[2,]))
