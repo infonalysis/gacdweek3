@@ -5,7 +5,13 @@
 ##  4 Appropriately labels the data set with descriptive activity names. 
 ##  5 Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
-tidyUP <- function() {
+##
+##  Load libraries
+##
+library("plyr")
+
+
+tidyUp <- function() {
 ##
 ##  Load some supplemental files
 ##
@@ -36,39 +42,32 @@ tidyUP <- function() {
     combinedData <- combinedData[,grep("Action|Subject.ID|mean\\(\\)|std\\(\\)", colnames(combinedData))] ##  remove columns that don't represent a mean() or std()
 
 ##
-##  Print some output
+##  Return
 ##
     return(combinedData)
 }
 
+
+##
+##  Use tidied data to create a summary
+##
+summarizeTidy <- function(tidiedData) {
+	summarizedData <- as.data.frame(t(colMeans(tidiedData[,-2])))[0,]
+	for (subject in unique(tidiedData$Subject.ID)) {
+		for (activity in unique(tidiedData[tidiedData$Subject.ID==subject,]$Action)) {
+			summarizedData[nrow(summarizedData)+1,] <- colMeans(tidiedData[tidiedData$Subject.ID==subject & tidiedData$Action==activity,][,-2])
+		}
+	}
+	
+	return(summarizedData)
+	
+}
+
+##
+## Run fanctions and write output files
+##
+
+tidiedData <- tidyUP()
 write.csv(tidiedData, file="tidiedData1.csv")
-
-
-##  trainX["Subject.ID"] <- read.table("UCI\ HAR\ Dataset/train/subject_train.txt") ##  include the subject IDs
-
-
-##
-##  random lines of code
-##
-##  read.table("UCI\ HAR\ Dataset/test/Inertial\ Signals/body_acc_x_test.txt")
-
-##  colHeaders <- read.table("UCI\ HAR\ Dataset/features.txt")
-
-##  testX["Subject.ID"] <- read.table("UCI\ HAR\ Dataset/test/subject_test.txt") ##  include the subject IDs
-
-##  testSubjects <- read.table("UCI\ HAR\ Dataset/test/subject_test.txt")
-##  colnames(testSubjects) <- c("Subject.ID")
-
-
-
-##  trainSubjects <- read.table("UCI\ HAR\ Dataset/train/subject_train.txt")
-##  colnames(trainSubjects) <- c("Subject.ID")
-
-
-##  colnames(testX) <- c(t(read.table("UCI\ HAR\ Dataset/features.txt")[2,]))
-
-
-##  combinedData[,grep("mean()|std()", colnames(combinedData))]
-
-##  setwd("/Users/Ben/Documents/School/Coursera/Cleaning Data/gacdweek3")
-##  names(testX)[1] <- "Action"
+summarizedData <- summarizeTidy(tidiedData)
+write.csv(summarizedData, file="summarizedData1.csv")
